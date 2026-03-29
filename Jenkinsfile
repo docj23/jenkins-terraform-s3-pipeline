@@ -28,15 +28,6 @@ pipeline {
             }
         }
 
-        stage('Upload Proof to S3') {
-            steps {
-                sh '''
-                    BUCKET=$(aws s3api list-buckets --query "Buckets[?starts_with(Name, 'jenkins-bucket-')].Name" --output text)
-                    aws s3 cp proof/ s3://$BUCKET/ --recursive
-                '''
-            }
-        }
-
         stage('Optional Destroy') {
             steps {
                 script {

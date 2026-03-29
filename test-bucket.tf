@@ -53,3 +53,17 @@ resource "aws_s3_bucket_policy" "frontend" {
     ]
   })
 }
+
+# Syncs the local proof/ folder to the S3 bucket as part of terraform apply
+# triggers ensures this runs on every apply, not just the first time
+resource "null_resource" "sync_proof" {
+  depends_on = [aws_s3_bucket_policy.frontend]
+
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "aws s3 sync ./proof s3://${aws_s3_bucket.frontend.id}/"
+  }
+}
